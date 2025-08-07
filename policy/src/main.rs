@@ -33,7 +33,7 @@ fn main() {
     let save_rate = 10;
     let end_superbatch = 50;
     let initial_lr = 0.001;
-    let final_lr = 0.001 * 0.3f32.powi(3);
+    let final_lr = 0.00001;
 
     let steps = TrainingSteps { batch_size: 16384, batches_per_superbatch: 6104, start_superbatch: 1, end_superbatch };
 
