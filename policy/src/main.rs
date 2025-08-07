@@ -18,8 +18,8 @@ use bullet_cuda_backend::CudaDevice;
 use crate::data::MontyDataLoader;
 
 fn main() {
-    let hl = 512;
-    let dataloader = MontyDataLoader::new("data/policygen6.binpack", 4096, 4);
+    let hl = 16;
+    let dataloader = MontyDataLoader::new("data/output.bin", 4096, 16);
 
     let device = CudaDevice::new(0).unwrap();
 
@@ -30,10 +30,10 @@ fn main() {
 
     let mut trainer = Trainer { optimiser, state: () };
 
-    let save_rate = 30;
-    let end_superbatch = 600;
+    let save_rate = 10;
+    let end_superbatch = 50;
     let initial_lr = 0.001;
-    let final_lr = 0.00001;
+    let final_lr = 0.001 * 0.3f32.powi(3);
 
     let steps = TrainingSteps { batch_size: 16384, batches_per_superbatch: 6104, start_superbatch: 1, end_superbatch };
 
@@ -46,8 +46,16 @@ fn main() {
             }
 
             let lambda = sb as f32 / end_superbatch as f32;
-            initial_lr * (final_lr / initial_lr).powf(lambda)
+            initial_lr + (final_lr - initial_lr) * lambda
         }),
+        // lr_schedule: Box::new(|_, sb| {
+        //     if sb >= end_superbatch {
+        //         return final_lr;
+        //     }
+        //
+        //     let lambda = sb as f32 / end_superbatch as f32;
+        //     initial_lr * (final_lr / initial_lr).powf(lambda)
+        // }),
     };
 
     trainer
