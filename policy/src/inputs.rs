@@ -6,8 +6,8 @@ pub const MAX_ACTIVE_BASE: usize = 32;
 pub const NUM_MOVES_INDICES: usize =  OFFSETS[64] + PROMOS;
 
 pub fn map_move_to_index(pos: &Position, mov: Move) -> usize {
-    let hm = if pos.king_index() % 8 > 3 { 7 } else { 0 };
-    let flip = hm ^ if pos.stm() == Side::BLACK { 56 } else { 0 };
+    // let hm = if pos.king_index() % 8 > 3 { 7 } else { 0 };
+    let flip = if pos.stm() == Side::BLACK { 56 } else { 0 };
     // let good_see = (OFFSETS[64] + PROMOS) * usize::from(see(pos, mov, -108));
 
     let src = usize::from(mov.src() ^ flip);
