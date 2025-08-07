@@ -18,7 +18,7 @@ use bullet_cuda_backend::CudaDevice;
 use crate::data::MontyDataLoader;
 
 fn main() {
-    let hl = 16;
+    let hl = 256;
     let dataloader = MontyDataLoader::new("data/output.bin", 4096, 16);
 
     let device = CudaDevice::new(0).unwrap();
@@ -74,6 +74,10 @@ fn main() {
             },
         )
         .unwrap();
+    // _ = trainer.optimiser.load_from_checkpoint("checkpoints/policy-50");
 
     model::eval(&mut trainer.optimiser.graph, node, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    model::eval(&mut trainer.optimiser.graph, node, "rnbqkbnr/ppppp2p/5p2/6p1/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3");
+    model::eval(&mut trainer.optimiser.graph, node, "rnbqk2r/pppp1ppp/3bpn2/8/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4");
+    model::eval(&mut trainer.optimiser.graph, node, "rnbqk3/ppppp1Q1/5p2/6p1/8/8/PPPPPPPP/RNB1KBNR w KQq - 0 1");
 }
