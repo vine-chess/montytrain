@@ -3,7 +3,7 @@ use montyformat::chess::{Attacks, Move, Piece, Position, Side};
 pub const MAX_MOVES: usize = 64;
 pub const INPUT_SIZE: usize = 768;
 pub const MAX_ACTIVE_BASE: usize = 32;
-pub const NUM_MOVES_INDICES: usize = 2 * (OFFSETS[64] + PROMOS);
+pub const NUM_MOVES_INDICES: usize =  OFFSETS[64] + PROMOS;
 
 pub fn map_move_to_index(pos: &Position, mov: Move) -> usize {
     let hm = if pos.king_index() % 8 > 3 { 7 } else { 0 };

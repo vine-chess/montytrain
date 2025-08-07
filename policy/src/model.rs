@@ -23,9 +23,9 @@ pub fn make(device: CudaDevice, hl: usize) -> (Graph<CudaDevice>, NodeId) {
     let moves = builder.new_sparse_input("moves", Shape::new(NUM_MOVES_INDICES, 1), MAX_MOVES);
 
     let l0 = builder.new_affine("l0", INPUT_SIZE, hl);
-    let l1 = builder.new_affine("l1", hl / 2, NUM_MOVES_INDICES);
+    let l1 = builder.new_affine("l1", hl, NUM_MOVES_INDICES);
 
-    let hl = l0.forward(inputs).crelu().pairwise_mul();
+    let hl = l0.forward(inputs).crelu();
 
     let logits = builder.apply(select_affine::SelectAffine::new(l1, hl, moves));
 
