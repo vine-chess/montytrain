@@ -31,8 +31,8 @@ pub fn map_move_to_index(pos: &Position, mov: Move) -> usize {
 
 pub fn map_base_inputs<F: FnMut(usize)>(pos: &Position, mut f: F) {
     let vert = if pos.stm() == Side::BLACK { 56 } else { 0 };
-    let hori = if pos.king_index() % 8 > 3 { 7 } else { 0 };
-    let flip = vert ^ hori;
+    // let hori = if pos.king_index() % 8 > 3 { 7 } else { 0 };
+    let flip = vert ;
 
     // let threats = pos.threats_by(pos.stm() ^ 1);
     // let defences = pos.threats_by(pos.stm());
