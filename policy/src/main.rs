@@ -66,7 +66,7 @@ fn main() {
             |trainer, superbatch| {
                 if superbatch % save_rate == 0 || superbatch == steps.end_superbatch {
                     println!("Saving Checkpoint");
-                    let dir = format!("checkpoints/policy-{superbatch}");
+                    let dir = format!("checkpoints/net2-{superbatch}");
                     let _ = std::fs::create_dir(&dir);
                     trainer.optimiser.write_to_checkpoint(&dir).unwrap();
                     model::save_quantised(&trainer.optimiser.graph, &format!("{dir}/quantised.bin")).unwrap();
