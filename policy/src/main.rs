@@ -19,7 +19,7 @@ use crate::data::MontyDataLoader;
 
 fn main() {
     let hl = 256;
-    let dataloader = MontyDataLoader::new("data/output_08_09_higher_root_pst_2_3.bin", 4096, 12, 12);
+    let dataloader = MontyDataLoader::new("data/output_08_09_higher_root_pst_2_3.bin", 8192, 16, 16);
 
     let device = CudaDevice::new(0).unwrap();
 
