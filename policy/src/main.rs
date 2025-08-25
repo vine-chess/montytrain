@@ -18,14 +18,14 @@ use bullet_cuda_backend::CudaDevice;
 use crate::data::MontyDataLoader;
 
 fn main() {
-    let hl = 256;
-    let dataloader = MontyDataLoader::new("data/output.bin", 4096, 16);
+    let hl = 512;
+    let dataloader = MontyDataLoader::new("data/output2.bin", 4096, 4, 4);
 
     let device = CudaDevice::new(0).unwrap();
 
     let (graph, node) = model::make(device, hl);
 
-    let params = AdamWParams { decay: 0.01, beta1: 0.9, beta2: 0.999, min_weight: -0.99, max_weight: 0.99 };
+    let params = AdamWParams { decay: 0.01, beta1: 0.95, beta2: 0.999, min_weight: -0.99, max_weight: 0.99 };
     let optimiser = Optimiser::<_, AdamW<_>>::new(graph, params).unwrap();
 
     let mut trainer = Trainer { optimiser, state: () };
@@ -48,14 +48,6 @@ fn main() {
             let lambda = sb as f32 / end_superbatch as f32;
             initial_lr + (final_lr - initial_lr) * lambda
         }),
-        // lr_schedule: Box::new(|_, sb| {
-        //     if sb >= end_superbatch {
-        //         return final_lr;
-        //     }
-        //
-        //     let lambda = sb as f32 / end_superbatch as f32;
-        //     initial_lr * (final_lr / initial_lr).powf(lambda)
-        // }),
     };
 
     trainer
@@ -66,7 +58,7 @@ fn main() {
             |trainer, superbatch| {
                 if superbatch % save_rate == 0 || superbatch == steps.end_superbatch {
                     println!("Saving Checkpoint");
-                    let dir = format!("checkpoints/net2-{superbatch}");
+                    let dir = format!("checkpoints/net6-{superbatch}");
                     let _ = std::fs::create_dir(&dir);
                     trainer.optimiser.write_to_checkpoint(&dir).unwrap();
                     model::save_quantised(&trainer.optimiser.graph, &format!("{dir}/quantised.bin")).unwrap();
