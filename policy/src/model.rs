@@ -23,11 +23,16 @@ pub fn make(device: CudaDevice, hl: usize) -> (Graph<CudaDevice>, NodeId) {
     let moves = builder.new_sparse_input("moves", Shape::new(NUM_MOVES_INDICES, 1), MAX_MOVES);
 
     let l0 = builder.new_affine("l0", INPUT_SIZE, hl);
-    let l1 = builder.new_affine("l1", hl, NUM_MOVES_INDICES);
+    let l1_1 = builder.new_affine("l1_1", hl, NUM_MOVES_INDICES);
+    let l1_2 = builder.new_affine("l1_2", hl, 16);
+    let l2 = builder.new_affine("l2", 16, NUM_MOVES_INDICES);
 
     let hl = l0.forward(inputs).crelu();
+    let hl2 = l1_2.forward(hl).crelu();
 
-    let logits = builder.apply(select_affine::SelectAffine::new(l1, hl, moves));
+    let logits_1 = builder.apply(select_affine::SelectAffine::new(l1_1, hl, moves));
+    let logits_2 = builder.apply(select_affine::SelectAffine::new(l2, hl2, moves));
+    let logits = logits_1 + logits_2;
 
     let ones = builder.new_constant(Shape::new(1, MAX_MOVES), &[1.0; MAX_MOVES]);
     let loss = logits.softmax_crossentropy_loss(targets);
@@ -75,10 +80,33 @@ pub fn save_quantised(graph: &Graph<CudaDevice>, path: &str) -> std::io::Result<
 
     let mut quant = Vec::new();
 
-    for id in ["l0w", "l0b", "l1w", "l1b"] {
+    for id in ["l0w", "l0b", "l1_1w", "l1_1b"] {
         let vals = graph.get_weights(id).get_dense_vals().unwrap();
 
         for x in vals {
+            let q = (x * 128.0).round() as i8;
+            assert_eq!((x * 128.0).round(), f32::from(q));
+            quant.extend_from_slice(&q.to_le_bytes());
+        }
+    }
+
+    for id in ["l2w", "l2b"] {
+        let vals = graph.get_weights(id).get_dense_vals().unwrap();
+
+        for x in vals {
+            // not sure how to quantize
+            let q = (x * 128.0).round() as i8;
+            assert_eq!((x * 128.0).round(), f32::from(q));
+
+            quant.extend_from_slice(&q.to_le_bytes());
+        }
+    }
+
+    for id in ["l1_2w", "l1_2b"] {
+        let vals = graph.get_weights(id).get_dense_vals().unwrap();
+
+        for x in vals {
+            // not sure how to quantize
             let q = (x * 128.0).round() as i8;
             assert_eq!((x * 128.0).round(), f32::from(q));
             quant.extend_from_slice(&q.to_le_bytes());
