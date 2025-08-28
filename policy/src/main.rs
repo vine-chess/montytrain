@@ -19,7 +19,7 @@ use crate::data::MontyDataLoader;
 
 fn main() {
     let hl = 512;
-    let dataloader = MontyDataLoader::new("data/output2.bin", 4096, 4, 4);
+    let dataloader = MontyDataLoader::new("data/output.bin", 4096, 4, 4);
 
     let device = CudaDevice::new(0).unwrap();
 
@@ -31,7 +31,7 @@ fn main() {
     let mut trainer = Trainer { optimiser, state: () };
 
     let save_rate = 10;
-    let end_superbatch = 50;
+    let end_superbatch = 70;
     let initial_lr = 0.001;
     let final_lr = 0.00001;
 
@@ -58,7 +58,7 @@ fn main() {
             |trainer, superbatch| {
                 if superbatch % save_rate == 0 || superbatch == steps.end_superbatch {
                     println!("Saving Checkpoint");
-                    let dir = format!("checkpoints/net6-{superbatch}");
+                    let dir = format!("checkpoints/net8-redo-{superbatch}");
                     let _ = std::fs::create_dir(&dir);
                     trainer.optimiser.write_to_checkpoint(&dir).unwrap();
                     model::save_quantised(&trainer.optimiser.graph, &format!("{dir}/quantised.bin")).unwrap();
