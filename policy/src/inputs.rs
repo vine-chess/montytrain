@@ -1,7 +1,7 @@
 use montyformat::chess::{Attacks, Move, Piece, Position, Side};
 
 pub const MAX_MOVES: usize = 64;
-pub const INPUT_SIZE: usize = 768;
+pub const INPUT_SIZE: usize = 768 * 4;
 pub const MAX_ACTIVE_BASE: usize = 32;
 pub const NUM_MOVES_INDICES: usize =  OFFSETS[64] + PROMOS;
 
@@ -34,8 +34,8 @@ pub fn map_base_inputs<F: FnMut(usize)>(pos: &Position, mut f: F) {
     // let hori = if pos.king_index() % 8 > 3 { 7 } else { 0 };
     let flip = vert ;
 
-    // let threats = pos.threats_by(pos.stm() ^ 1);
-    // let defences = pos.threats_by(pos.stm());
+    let threats = pos.threats_by(pos.stm() ^ 1);
+    let defences = pos.threats_by(pos.stm());
 
     for piece in Piece::PAWN..=Piece::KING {
         let pc = 64 * (piece - 2);
@@ -45,18 +45,16 @@ pub fn map_base_inputs<F: FnMut(usize)>(pos: &Position, mut f: F) {
 
         while our_bb > 0 {
             let sq = our_bb.trailing_zeros() as usize;
-            let
-            // mut
-            feat = pc + (sq ^ flip);
+            let mut feat = pc + (sq ^ flip);
 
-            // let bit = 1 << sq;
-            // if threats & bit > 0 {
-            //     feat += 768;
-            // }
-            //
-            // if defences & bit > 0 {
-            //     feat += 768 * 2;
-            // }
+            let bit = 1 << sq;
+            if threats & bit > 0 {
+                 feat += 768;
+            }
+            
+            if defences & bit > 0 {
+                feat += 768 * 2;
+            }
 
             f(feat);
 
@@ -65,18 +63,15 @@ pub fn map_base_inputs<F: FnMut(usize)>(pos: &Position, mut f: F) {
 
         while opp_bb > 0 {
             let sq = opp_bb.trailing_zeros() as usize;
-            let 
-            // mut
-            feat = 384 + pc + (sq ^ flip);
+            let mut feat = 384 + pc + (sq ^ flip);
 
-            // let bit = 1 << sq;
-            // if threats & bit > 0 {
-            //     feat += 768;
-            // }
-            //
-            // if defences & bit > 0 {
-            //     feat += 768 * 2;
-            // }
+            let bit = 1 << sq;
+            if threats & bit > 0 {
+               feat += 768;
+            }
+            if defences & bit > 0 {
+               feat += 768 * 2;
+            }
 
             f(feat);
 

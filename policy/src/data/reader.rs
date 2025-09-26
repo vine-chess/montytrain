@@ -5,6 +5,10 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
+use rand::{Rng, SeedableRng};
+use rand::rngs::SmallRng;
+use rand::rngs::StdRng;
+
 use montyformat::{
     chess::{Castling, Move, Position}, FastDeserialise, MontyFormat
 };
@@ -221,7 +225,7 @@ fn parse_into_buffer(game: &[u8], buffer: &mut Vec<DecompressedData>) {
             break;
         }
 
-        let _score = f32::from(read_into_primitive!(reader, u16)) / f32::from(u16::MAX);
+        let score = f32::from(read_into_primitive!(reader, u16)) / f32::from(u16::MAX);
 
         let num_moves = usize::from(read_into_primitive!(reader, u8));
 
